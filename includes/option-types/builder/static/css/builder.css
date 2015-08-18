@@ -308,34 +308,26 @@
 	display: inline-block;
 	float: none;
 	position: relative;
+	padding: 0;
+	margin: 0;
+	z-index: 1;
 
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-
-
-	animation: fwGrowIn .3s ease-in-out;
-	animation-iteration-count: 1;
-
-	-webkit-animation: fwGrowIn .3s ease-in-out;
-	-webkit-animation-iteration-count: 1;
-
-	-moz-animation: fwGrowIn .3s ease-in-out;
-	-moz-animation-iteration-count: 1;
-
-	-o-animation: fwGrowIn .3s ease-in-out;
-	-o-animation-iteration-count: 1;
-
-	-ms-animation: fwGrowIn .3s ease-in-out;
-	-ms-animation-iteration-count: 1;
 }
 
 .fw-option-type-builder > .builder-root-items .fw-builder-placeholder:after {
 	content: ' ';
 	position: absolute;
+	display: block;
 	height: 100%;
+	width: 100%;
 	border: 3px solid #00A0D2;
 	border-radius: 3px;
+	font-size: 0;
+	padding: 0;
+	margin: 0;
 
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;

@@ -460,14 +460,6 @@ jQuery(document).ready(function($){
 											}
 										});
 									}
-
-									// Freeze the container height
-									{
-										var container = builder.$input.closest('.fw-option-type-builder')
-											.find( '.builder-root-items > .builder-items');
-
-										container.css('min-height', container.height() +'px' );
-									}
 								},
 								sort: function(event, ui) {
 									{
@@ -478,31 +470,44 @@ jQuery(document).ready(function($){
 										});
 									}
 
-									{
+									if (ui.placeholder.css('display') == 'none') {
+										// this happens when the item is not allowed to be dragged in another
+										ui.placeholder.removeAttr('style');
+									} else {
 										var $prev = ui.placeholder.prev(),
 											$next = ui.placeholder.next(),
-											placeholderHeight = Math.min(
+											placeholderCss = {
+												height: 0,
+												width: 0,
+												display: ''
+											};
+
+										if (
+											!$prev.length
+											||
+											(!$prev.length && !$next.length)
+											||
+											($prev.length && $prev.outerWidth() == ui.placeholder.parent().width())
+										) {
+											placeholderCss.height = 0;
+											placeholderCss.width = '100%';
+											placeholderCss.display = 'block';
+										} else {
+											placeholderCss.height = Math.min(
 												$prev.length ? $prev.height() : 9999,
 												$next.length ? $next.height() : 9999
 											);
 
-										if (placeholderHeight === 9999) {
-											placeholderHeight = ui.helper.height();
+											if (placeholderCss.height === 9999) {
+												placeholderCss.height = ui.helper.height();
+											}
 										}
 
-										ui.placeholder.css('height', placeholderHeight +'px');
+										ui.placeholder.css(placeholderCss);
 									}
 								},
 								stop: function(event, ui) {
 									itemsRemoveAllowedDeniedClasses();
-
-									// unfreeze the container height
-									{
-										var container = builder.$input.closest('.fw-option-type-builder')
-											.find( '.builder-root-items > .builder-items');
-
-										container.css('min-height', '');
-									}
 								},
 								receive: function(event, ui) {
 									// sometimes the "stop" event is not triggered and classes remains
