@@ -381,7 +381,7 @@ jQuery(document).ready(function($){
 								items: '> .builder-item',
 								connectWith: '#'+ builder.$input.closest('.fw-option-type-builder').attr('id') +' .builder-root-items .builder-items',
 								distance: 10,
-								opacity: 0.6,
+								//opacity: 0.6,
 								scrollSpeed: 10,
 								placeholder: 'fw-builder-placeholder',
 								tolerance: 'pointer',
@@ -419,12 +419,15 @@ jQuery(document).ready(function($){
 
 									var movedItemType = movedItem.get('type');
 
-									ui.helper.html(
-										'<div style="width: 100%; height: 100%; background: #fff;">'+ movedItemType +'</div>'
-									);
-									ui.helper.css({
+									ui.helper
+										.html(
+											'<div>'+ movedItemType +'</div>'
+										)
+										.css({
 										'height': '70px',
-										'width': '70px'
+										'width': '70px',
+										'border': '1px solid #E1E1E1',
+										'background': '#fff'
 									});
 
 									/**
@@ -484,12 +487,10 @@ jQuery(document).ready(function($){
 											);
 
 										if (placeholderHeight === 9999) {
-											placeholderHeight = 20;
-											console.log(ui.placeholder.parent().get(0));
-											placeholderHeight = ui.placeholder.parent().height() - parseInt(ui.placeholder.parent().css('padding-top'));
+											placeholderHeight = ui.helper.height();
 										}
 
-										ui.placeholder.css('height', placeholderHeight);
+										ui.placeholder.css('height', placeholderHeight +'px');
 									}
 								},
 								stop: function(event, ui) {
