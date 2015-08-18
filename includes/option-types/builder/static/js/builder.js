@@ -385,20 +385,13 @@ jQuery(document).ready(function($){
 								scrollSpeed: 10,
 								placeholder: 'fw-builder-placeholder',
 								tolerance: 'pointer',
+								/**
+								 * @param event
+								 * @param ui
+								 * 	ui.placeholder - The element representing the result position (after drop)
+								 * 	ui.helper - The element that follows the mouse
+								 */
 								start: function(event, ui) {
-									{
-										ui.placeholder
-											.addClass(ui.item.attr('class'))
-											.css('padding', ui.item.css('padding'))
-											.css('height', ui.item.css('height'));
-
-										if (ui.item.hasClass('builder-item-type')) {
-											ui.placeholder
-												.removeClass('builder-item-type')
-												.css('width', '100%');
-										}
-									}
-
 									// check if it is an exiting item (and create variables)
 									{
 										// extract cid from view id
@@ -422,15 +415,17 @@ jQuery(document).ready(function($){
 											console.warn('Item not found (cid: "'+ movedItemCid +'")');
 											return;
 										}
-
-										// fixme: this is hardcode. need to think a better/general solution
-										if (movedItem.attributes.type != 'column'
-											&& movedItem.attributes.type != 'section') {
-											ui.item.parents('.builder-root-items').addClass('fw-move-simple-item');
-										}
 									}
 
 									var movedItemType = movedItem.get('type');
+
+									ui.helper.html(
+										'<div style="width: 100%; height: 100%; background: #fff;">'+ movedItemType +'</div>'
+									);
+									ui.helper.css({
+										'height': '70px',
+										'width': '70px'
+									});
 
 									/**
 									 * add "allowed" classes to items vies where allowIncomingType(movedItemType) returned true
@@ -471,10 +466,34 @@ jQuery(document).ready(function($){
 										container.css('min-height', container.height() +'px' );
 									}
 								},
+								sort: function(event, ui) {
+									{
+										var targetOffset = $(event.target).offset();
+
+										ui.helper.css({
+											'left': ( event.pageX - targetOffset.left ) +'px' // http://stackoverflow.com/a/14872192/1794248
+										});
+									}
+
+									{
+										var $prev = ui.placeholder.prev(),
+											$next = ui.placeholder.next(),
+											placeholderHeight = Math.min(
+												$prev.length ? $prev.height() : 9999,
+												$next.length ? $next.height() : 9999
+											);
+
+										if (placeholderHeight === 9999) {
+											placeholderHeight = 20;
+											console.log(ui.placeholder.parent().get(0));
+											placeholderHeight = ui.placeholder.parent().height() - parseInt(ui.placeholder.parent().css('padding-top'));
+										}
+
+										ui.placeholder.css('height', placeholderHeight);
+									}
+								},
 								stop: function(event, ui) {
 									itemsRemoveAllowedDeniedClasses();
-
-									ui.item.parents('.builder-root-items').removeClass('fw-move-simple-item');
 
 									// unfreeze the container height
 									{
