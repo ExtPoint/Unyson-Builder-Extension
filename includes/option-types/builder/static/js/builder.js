@@ -381,7 +381,7 @@ jQuery(document).ready(function($){
 								items: '> .builder-item',
 								connectWith: '#'+ builder.$input.closest('.fw-option-type-builder').attr('id') +' .builder-root-items .builder-items',
 								distance: 10,
-								//opacity: 0.6,
+								opacity: 0.6,
 								scrollSpeed: 10,
 								placeholder: 'fw-builder-placeholder',
 								tolerance: 'pointer',
@@ -392,88 +392,90 @@ jQuery(document).ready(function($){
 								 * 	ui.helper - The element that follows the mouse
 								 */
 								start: function(event, ui) {
-									// check if it is an exiting item (and create variables)
-									{
-										// extract cid from view id
-										var movedItemCid = ui.item.attr('id');
+									do {
+										// check if it is an exiting item (and create variables)
+										{
+											// extract cid from view id
+											var movedItemCid = ui.item.attr('id');
 
-										if (!movedItemCid) {
-											// not an existing item, it's a thumbnail from draggable
-											return;
+											if (!movedItemCid) {
+												// not an existing item, it's a thumbnail from draggable
+												break;
+											}
+
+											movedItemCid = movedItemCid.split('-').pop();
+
+											if (!movedItemCid) {
+												// not an existing item, it's a thumbnail from draggable
+												break;
+											}
+
+											var movedItem = builder.findItemRecursive({cid: movedItemCid});
+
+											if (!movedItem) {
+												console.warn('Item not found (cid: "'+ movedItemCid +'")');
+												break;
+											}
 										}
 
-										movedItemCid = movedItemCid.split('-').pop();
+										var movedItemType = movedItem.get('type');
 
-										if (!movedItemCid) {
-											// not an existing item, it's a thumbnail from draggable
-											return;
+										/**
+										 * add "allowed" classes to items vies where allowIncomingType(movedItemType) returned true
+										 * else add "denied" class
+										 */
+										{
+											{
+												if (movedItem.allowDestinationType(null)) {
+													builder.rootItems.view.$el.addClass('fw-builder-item-allow-incoming-type');
+												} else {
+													builder.rootItems.view.$el.addClass('fw-builder-item-deny-incoming-type');
+												}
+											}
+
+											forEachItemRecursive(builder.rootItems, function(item){
+												if (item.cid === movedItemCid) {
+													// this is current moved item
+													return;
+												}
+
+												if (
+													item.allowIncomingType(movedItemType)
+													&&
+													movedItem.allowDestinationType(item.get('type'))
+												) {
+													item.view.$el.addClass('fw-builder-item-allow-incoming-type');
+												} else {
+													item.view.$el.addClass('fw-builder-item-deny-incoming-type');
+												}
+											});
 										}
 
-										var movedItem = builder.findItemRecursive({cid: movedItemCid});
-
-										if (!movedItem) {
-											console.warn('Item not found (cid: "'+ movedItemCid +'")');
-											return;
-										}
-									}
-
-									var movedItemType = movedItem.get('type');
-
-									ui.helper
-										.html(
-											'<div>'+ movedItemType +'</div>'
-										)
-										.css({
-											'height': '70px',
-											'width': '70px',
-											'border': '1px solid #E1E1E1',
-											'background': '#fff'
-										});
+										/*ui.helper
+											.html(
+												'<div class="fw-text-center"><span class="dashicons dashicons-smiley"></span></div>'
+											)
+											.css({
+												'height': '70px',
+												'width': '70px',
+												'border': '1px solid #E1E1E1',
+												'background': '#fff'
+											});*/
+									} while(false);
 
 									ui.placeholder.append('<div class="fw-builder-placeholder-inner"></div>');
-
-									/**
-									 * add "allowed" classes to items vies where allowIncomingType(movedItemType) returned true
-									 * else add "denied" class
-									 */
-									{
-										{
-											if (movedItem.allowDestinationType(null)) {
-												builder.rootItems.view.$el.addClass('fw-builder-item-allow-incoming-type');
-											} else {
-												builder.rootItems.view.$el.addClass('fw-builder-item-deny-incoming-type');
-											}
-										}
-
-										forEachItemRecursive(builder.rootItems, function(item){
-											if (item.cid === movedItemCid) {
-												// this is current moved item
-												return;
-											}
-
-											if (
-												item.allowIncomingType(movedItemType)
-												&&
-												movedItem.allowDestinationType(item.get('type'))
-											) {
-												item.view.$el.addClass('fw-builder-item-allow-incoming-type');
-											} else {
-												item.view.$el.addClass('fw-builder-item-deny-incoming-type');
-											}
-										});
-									}
 								},
 								sort: function(event, ui) {
 									/**
 									 * Helper position
 									 */
-									{
+									/*{
 										var targetOffset = $(event.target).offset();
 
 										ui.helper.css({
 											'left': ( event.pageX - targetOffset.left + 15 ) +'px'
 										});
-									}
+									}*/
 
 									/**
 									 * Placeholder line size
@@ -482,7 +484,8 @@ jQuery(document).ready(function($){
 										// this happens when the item is not allowed to be dragged in another
 										ui.placeholder.removeAttr('style');
 									} else {
-										var $prev = ui.placeholder.prev(),
+										var placeholderThickness = 8, // this is affected by css
+											$prev = ui.placeholder.prev(),
 											$next = ui.placeholder.next(),
 											placeholderCss = {
 												height: 0,
@@ -549,8 +552,8 @@ jQuery(document).ready(function($){
 											placeholderCss.display = 'block';
 										} else {
 											placeholderCss.height = Math.min(
-												$prev.length ? $prev.height() : 9999,
-												$next.length ? $next.height() : 9999
+												$prev.length ? $prev.outerHeight() - placeholderThickness : 9999,
+												$next.length ? $next.outerHeight() - placeholderThickness : 9999
 											);
 
 											if (placeholderCss.height === 9999) {
@@ -564,8 +567,7 @@ jQuery(document).ready(function($){
 										 * Align the placeholder in the middle between the items
 										 */
 										{
-											var placeholderThickness = 8, // this is affected by css
-												placeholderInnerCss = {
+											var placeholderInnerCss = {
 													top: '',
 													right: '',
 													bottom: '',
