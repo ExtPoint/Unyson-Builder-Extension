@@ -424,11 +424,13 @@ jQuery(document).ready(function($){
 											'<div>'+ movedItemType +'</div>'
 										)
 										.css({
-										'height': '70px',
-										'width': '70px',
-										'border': '1px solid #E1E1E1',
-										'background': '#fff'
-									});
+											'height': '70px',
+											'width': '70px',
+											'border': '1px solid #E1E1E1',
+											'background': '#fff'
+										});
+
+									ui.placeholder.append('<div class="fw-builder-placeholder-inner"></div>');
 
 									/**
 									 * add "allowed" classes to items vies where allowIncomingType(movedItemType) returned true
@@ -469,7 +471,7 @@ jQuery(document).ready(function($){
 										var targetOffset = $(event.target).offset();
 
 										ui.helper.css({
-											'left': ( event.pageX - targetOffset.left ) +'px'
+											'left': ( event.pageX - targetOffset.left + 15 ) +'px'
 										});
 									}
 
@@ -557,6 +559,64 @@ jQuery(document).ready(function($){
 										}
 
 										ui.placeholder.css(placeholderCss);
+
+										/**
+										 * Align the placeholder in the middle between the items
+										 */
+										{
+											var placeholderThickness = 8, // this is affected by css
+												placeholderInnerCss = {
+													top: '',
+													right: '',
+													bottom: '',
+													left: ''
+												};
+
+											if (placeholderCss.height == 0) {
+												var topSpace = 0, bottomSpace = 0;
+
+												if ($prev.length) {
+													topSpace = parseInt($prev.css('padding-bottom'));
+												} else {
+													topSpace = parseInt(ui.placeholder.parent().css('padding-top'));
+												}
+
+												if ($next.length) {
+													bottomSpace = parseInt($next.css('padding-top'));
+												} else {
+													bottomSpace = parseInt(ui.placeholder.parent().css('padding-bottom'));
+												}
+
+												placeholderInnerCss.left = placeholderInnerCss.right = 10;
+												placeholderInnerCss.bottom = 'auto';
+												placeholderInnerCss.top =
+													bottomSpace -
+													Math.floor((topSpace + bottomSpace) / 2) -
+													Math.floor(placeholderThickness / 2);
+											} else {
+												var leftSpace = 0, rightSpace = 0;
+
+												if ($prev.length) {
+													leftSpace = parseInt($prev.css('padding-right'));
+												} else {
+													leftSpace = parseInt(ui.placeholder.parent().css('padding-left'));
+												}
+
+												if ($next.length) {
+													rightSpace = parseInt($next.css('padding-left'));
+												} else {
+													rightSpace = parseInt(ui.placeholder.parent().css('padding-right'));
+												}
+
+												placeholderInnerCss.right = 'auto';
+												placeholderInnerCss.left =
+													rightSpace -
+													Math.floor((leftSpace + rightSpace) / 2) -
+													Math.floor(placeholderThickness / 2);
+											}
+
+											ui.placeholder.find('> .fw-builder-placeholder-inner').css(placeholderInnerCss);
+										}
 									}
 								},
 								stop: function(event, ui) {

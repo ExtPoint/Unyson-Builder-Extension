@@ -305,9 +305,9 @@
 }
 
 .fw-option-type-builder > .builder-root-items .fw-builder-placeholder {
+	position: relative;
 	display: inline-block;
 	float: none;
-	position: relative;
 	padding: 0;
 	margin: 0;
 	z-index: 1;
@@ -317,17 +317,19 @@
 	box-sizing: border-box;
 }
 
-.fw-option-type-builder > .builder-root-items .fw-builder-placeholder:after {
-	content: ' ';
+.fw-option-type-builder > .builder-root-items .fw-builder-placeholder > .fw-builder-placeholder-inner {
 	position: absolute;
-	display: block;
-	height: 100%;
-	width: 100%;
-	border: 3px solid #00A0D2;
-	border-radius: 3px;
+	border: 4px solid #00709F;
+	border-color: #000;
+	border-radius: 8px;
+	opacity: .3;
 	font-size: 0;
 	padding: 0;
 	margin: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
