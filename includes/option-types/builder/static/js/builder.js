@@ -462,6 +462,9 @@ jQuery(document).ready(function($){
 									}
 								},
 								sort: function(event, ui) {
+									/**
+									 * Helper position
+									 */
 									{
 										var targetOffset = $(event.target).offset();
 
@@ -470,6 +473,9 @@ jQuery(document).ready(function($){
 										});
 									}
 
+									/**
+									 * Placeholder line size
+									 */
 									if (ui.placeholder.css('display') == 'none') {
 										// this happens when the item is not allowed to be dragged in another
 										ui.placeholder.removeAttr('style');
@@ -516,12 +522,16 @@ jQuery(document).ready(function($){
 											nextWidth = $next.length ? $next.outerWidth() : 0;
 
 										if (
+											// destination is empty (has no items)
 											(!$prev.length && !$next.length)
 											||
+											// first in list and the next item has 100% width
 											(!$prev.length && $next.length && nextWidth == placeholderParentWidth)
 											||
+											// last in list and the previous item has 100% width
 											(!$next.length && $prev.length && prevWidth == placeholderParentWidth)
 											||
+											// is between items, both previous and next item have 100% width
 											(
 												$prev.length && $next.length
 												&&
