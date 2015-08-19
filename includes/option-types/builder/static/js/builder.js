@@ -466,7 +466,7 @@ jQuery(document).ready(function($){
 										var targetOffset = $(event.target).offset();
 
 										ui.helper.css({
-											'left': ( event.pageX - targetOffset.left ) +'px' // http://stackoverflow.com/a/14872192/1794248
+											'left': ( event.pageX - targetOffset.left ) +'px'
 										});
 									}
 
@@ -480,14 +480,53 @@ jQuery(document).ready(function($){
 												height: 0,
 												width: 0,
 												display: ''
-											};
+											},
+											placeholderParentWidth = ui.placeholder.parent().width();
+
+										// Make sure to select only the visible prev and next
+										{
+											while (
+												$prev.length
+												&& (
+													!$prev.is(':visible')
+													||
+													$prev.get(0) === ui.helper.get(0)
+													||
+													$prev.get(0) === ui.placeholder.get(0)
+												)
+											) {
+												$prev = $prev.prev();
+											}
+
+											while (
+												$next.length
+												&& (
+													!$next.is(':visible')
+													||
+													$next.get(0) === ui.helper.get(0)
+													||
+													$next.get(0) === ui.placeholder.get(0)
+												)
+											) {
+												$next = $next.next();
+											}
+										}
+
+										var prevWidth = $prev.length ? $prev.outerWidth() : 0,
+											nextWidth = $next.length ? $next.outerWidth() : 0;
 
 										if (
-											!$prev.length
-											||
 											(!$prev.length && !$next.length)
 											||
-											($prev.length && $prev.outerWidth() == ui.placeholder.parent().width())
+											(!$prev.length && $next.length && nextWidth == placeholderParentWidth)
+											||
+											(!$next.length && $prev.length && prevWidth == placeholderParentWidth)
+											||
+											(
+												$prev.length && $next.length
+												&&
+												prevWidth == placeholderParentWidth && nextWidth == placeholderParentWidth
+											)
 										) {
 											placeholderCss.height = 0;
 											placeholderCss.width = '100%';
