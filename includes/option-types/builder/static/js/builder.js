@@ -531,8 +531,16 @@ jQuery(document).ready(function($){
 											// last in list and the previous item has 100% width
 											(!$next.length && $prev.length && prevWidth == placeholderParentWidth)
 											||
-											// is between items, both previous item has 100% width
-											$prev.length && $next.length && prevWidth == placeholderParentWidth
+											// is between items, previous or next item have 100% width
+											(
+												$prev.length && $next.length
+												&&
+												(
+													prevWidth == placeholderParentWidth
+													||
+													nextWidth == placeholderParentWidth
+												)
+											)
 										) {
 											placeholderCss.height = 0;
 											placeholderCss.width = '100%';
