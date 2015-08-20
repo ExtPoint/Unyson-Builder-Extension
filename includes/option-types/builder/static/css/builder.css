@@ -308,12 +308,16 @@
 	position: relative;
 	display: inline-block;
 	float: none;
-	padding: 0;
-	margin: 0;
+	padding: 0 !important;
+	margin: 0 !important;
 
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
+}
+
+.fw-option-type-builder > .builder-root-items .fw-builder-placeholder > div:not(.fw-builder-placeholder-inner) {
+	display: none;
 }
 
 .fw-option-type-builder > .builder-root-items .fw-builder-placeholder > .fw-builder-placeholder-inner {

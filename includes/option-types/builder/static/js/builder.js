@@ -309,6 +309,8 @@ jQuery(document).ready(function($){
 						initSortableTimeout: 0,
 						initialize: function() {
 							this.defaultInitialize();
+
+							this.sortableInstances = {};
 						},
 						/**
 						 * It is required to call this method in .initialize()
@@ -329,9 +331,9 @@ jQuery(document).ready(function($){
 								});
 							}
 
-							if (this.$el.hasClass('ui-sortable')) {
-								this.$el.sortable('destroy');
-							}
+							/*if (this.$el.hasClass('ui-sortable')) { // fixme
+								this.$el.fwBuilderSortable('destroy');
+							}*/
 
 							this.$el.html(this.template({
 								items: this.collection
@@ -358,7 +360,9 @@ jQuery(document).ready(function($){
 							return this;
 						},
 						initSortable: function(){
-							if (this.$el.hasClass('ui-sortable')) {
+							var instanceId = jQuery.data(this.$el.get(0), 'sortable-id');
+
+							if (instanceId && typeof this.sortableInstances[ instanceId ] != 'undefined') {
 								// already initialized
 								return false;
 							}
@@ -376,127 +380,141 @@ jQuery(document).ready(function($){
 								});
 							}
 
-							this.$el.sortable({
-								helper: 'clone',
-								items: '> .builder-item',
-								connectWith: '#'+ builder.$input.closest('.fw-option-type-builder').attr('id') +' .builder-root-items .builder-items',
-								distance: 10,
-								opacity: 0.6,
-								scrollSpeed: 10,
-								placeholder: 'fw-builder-placeholder',
-								tolerance: 'pointer',
-								/**
-								 * @param event
-								 * @param ui
-								 * 	ui.placeholder - The element representing the result position (after drop)
-								 * 	ui.helper - The element that follows the mouse
-								 */
-								start: function(event, ui) {
-									do {
-										// check if it is an exiting item (and create variables)
-										{
-											// extract cid from view id
-											var movedItemCid = ui.item.attr('id');
+							if (true) {
+								instanceId = Math.random();
 
-											if (!movedItemCid) {
-												// not an existing item, it's a thumbnail from draggable
-												break;
+								jQuery.data(this.$el.get(0), 'sortable-id', instanceId);
+
+								this.sortableInstances[ instanceId ] = new Sortable(this.$el.get(0), {
+									group: 'fw_builder_'+ builder.cid,
+									draggable: '>*',
+									ghostClass: 'fw-builder-placeholder',
+									onStart: function (/**Event*/evt) {
+										$(evt.item).append('<div class="fw-builder-placeholder-inner"></div>');
+									}
+								});
+							} else {
+								this.$el.sortable({
+									helper: 'clone',
+									items: '> .builder-item',
+									connectWith: '#' + builder.$input.closest('.fw-option-type-builder').attr('id') + ' .builder-root-items .builder-items',
+									distance: 10,
+									opacity: 0.6,
+									scrollSpeed: 10,
+									placeholder: 'fw-builder-placeholder',
+									tolerance: 'pointer',
+									/**
+									 * @param event
+									 * @param ui
+									 *    ui.placeholder - The element representing the result position (after drop)
+									 *    ui.helper - The element that follows the mouse
+									 */
+									start: function (event, ui) {
+										do {
+											// check if it is an exiting item (and create variables)
+											{
+												// extract cid from view id
+												var movedItemCid = ui.item.attr('id');
+
+												if (!movedItemCid) {
+													// not an existing item, it's a thumbnail from draggable
+													break;
+												}
+
+												movedItemCid = movedItemCid.split('-').pop();
+
+												if (!movedItemCid) {
+													// not an existing item, it's a thumbnail from draggable
+													break;
+												}
+
+												var movedItem = builder.findItemRecursive({cid: movedItemCid});
+
+												if (!movedItem) {
+													console.warn('Item not found (cid: "' + movedItemCid + '")');
+													break;
+												}
 											}
 
-											movedItemCid = movedItemCid.split('-').pop();
+											var movedItemType = movedItem.get('type');
 
-											if (!movedItemCid) {
-												// not an existing item, it's a thumbnail from draggable
-												break;
+											/**
+											 * add "allowed" classes to items vies where allowIncomingType(movedItemType) returned true
+											 * else add "denied" class
+											 */
+											{
+												{
+													if (movedItem.allowDestinationType(null)) {
+														builder.rootItems.view.$el.addClass('fw-builder-item-allow-incoming-type');
+													} else {
+														builder.rootItems.view.$el.addClass('fw-builder-item-deny-incoming-type');
+													}
+												}
+
+												forEachItemRecursive(builder.rootItems, function (item) {
+													if (item.cid === movedItemCid) {
+														// this is current moved item
+														return;
+													}
+
+													if (
+														item.allowIncomingType(movedItemType)
+														&&
+														movedItem.allowDestinationType(item.get('type'))
+													) {
+														item.view.$el.addClass('fw-builder-item-allow-incoming-type');
+													} else {
+														item.view.$el.addClass('fw-builder-item-deny-incoming-type');
+													}
+												});
 											}
 
-											var movedItem = builder.findItemRecursive({cid: movedItemCid});
+											/*ui.helper
+											 .html(
+											 '<div class="fw-text-center"><span class="dashicons dashicons-smiley"></span></div>'
+											 )
+											 .css({
+											 'height': '70px',
+											 'width': '70px',
+											 'border': '1px solid #E1E1E1',
+											 'background': '#fff'
+											 });*/
+										} while (false);
 
-											if (!movedItem) {
-												console.warn('Item not found (cid: "'+ movedItemCid +'")');
-												break;
-											}
-										}
+										ui.placeholder.append('<div class="fw-builder-placeholder-inner"></div>');
+									},
+									sort: function (event, ui) {
+										/**
+										 * Helper position
+										 */
+										/*{
+										 var targetOffset = $(event.target).offset();
 
-										var movedItemType = movedItem.get('type');
+										 ui.helper.css({
+										 'left': ( event.pageX - targetOffset.left + 15 ) +'px'
+										 });
+										 }*/
 
 										/**
-										 * add "allowed" classes to items vies where allowIncomingType(movedItemType) returned true
-										 * else add "denied" class
+										 * Placeholder line size
 										 */
-										{
+										if (ui.placeholder.css('display') == 'none') {
+											// this happens when the item is not allowed to be dragged in another
+											ui.placeholder.removeAttr('style');
+										} else {
+											var placeholderThickness = 2, // this is affected by css
+												$prev = ui.placeholder.prev(),
+												$next = ui.placeholder.next(),
+												placeholderCss = {
+													height: 0,
+													width: 0,
+													display: ''
+												},
+												placeholderParentWidth = ui.placeholder.parent().width();
+
+											// Make sure to select only the visible prev and next
 											{
-												if (movedItem.allowDestinationType(null)) {
-													builder.rootItems.view.$el.addClass('fw-builder-item-allow-incoming-type');
-												} else {
-													builder.rootItems.view.$el.addClass('fw-builder-item-deny-incoming-type');
-												}
-											}
-
-											forEachItemRecursive(builder.rootItems, function(item){
-												if (item.cid === movedItemCid) {
-													// this is current moved item
-													return;
-												}
-
-												if (
-													item.allowIncomingType(movedItemType)
-													&&
-													movedItem.allowDestinationType(item.get('type'))
-												) {
-													item.view.$el.addClass('fw-builder-item-allow-incoming-type');
-												} else {
-													item.view.$el.addClass('fw-builder-item-deny-incoming-type');
-												}
-											});
-										}
-
-										/*ui.helper
-											.html(
-												'<div class="fw-text-center"><span class="dashicons dashicons-smiley"></span></div>'
-											)
-											.css({
-												'height': '70px',
-												'width': '70px',
-												'border': '1px solid #E1E1E1',
-												'background': '#fff'
-											});*/
-									} while(false);
-
-									ui.placeholder.append('<div class="fw-builder-placeholder-inner"></div>');
-								},
-								sort: function(event, ui) {
-									/**
-									 * Helper position
-									 */
-									/*{
-										var targetOffset = $(event.target).offset();
-
-										ui.helper.css({
-											'left': ( event.pageX - targetOffset.left + 15 ) +'px'
-										});
-									}*/
-
-									/**
-									 * Placeholder line size
-									 */
-									if (ui.placeholder.css('display') == 'none') {
-										// this happens when the item is not allowed to be dragged in another
-										ui.placeholder.removeAttr('style');
-									} else {
-										var placeholderThickness = 2, // this is affected by css
-											$prev = ui.placeholder.prev(),
-											$next = ui.placeholder.next(),
-											placeholderCss = {
-												height: 0,
-												width: 0,
-												display: ''
-											},
-											placeholderParentWidth = ui.placeholder.parent().width();
-
-										// Make sure to select only the visible prev and next
-										{
-											while (
+												while (
 												$prev.length
 												&& (
 													!$prev.is(':visible')
@@ -505,11 +523,11 @@ jQuery(document).ready(function($){
 													||
 													$prev.get(0) === ui.placeholder.get(0)
 												)
-											) {
-												$prev = $prev.prev();
-											}
+													) {
+													$prev = $prev.prev();
+												}
 
-											while (
+												while (
 												$next.length
 												&& (
 													!$next.is(':visible')
@@ -518,25 +536,25 @@ jQuery(document).ready(function($){
 													||
 													$next.get(0) === ui.placeholder.get(0)
 												)
-											) {
-												$next = $next.next();
+													) {
+													$next = $next.next();
+												}
 											}
-										}
 
-										var prevWidth = $prev.length ? $prev.outerWidth() : 0,
-											nextWidth = $next.length ? $next.outerWidth() : 0;
+											var prevWidth = $prev.length ? $prev.outerWidth() : 0,
+												nextWidth = $next.length ? $next.outerWidth() : 0;
 
-										if (
-											// destination is empty (has no items)
+											if (
+												// destination is empty (has no items)
 											(!$prev.length && !$next.length)
 											||
-											// first in list and the next item has 100% width
+												// first in list and the next item has 100% width
 											(!$prev.length && $next.length && nextWidth == placeholderParentWidth)
 											||
-											// last in list and the previous item has 100% width
+												// last in list and the previous item has 100% width
 											(!$next.length && $prev.length && prevWidth == placeholderParentWidth)
 											||
-											// is between items, previous or next item have 100% width
+												// is between items, previous or next item have 100% width
 											(
 												$prev.length && $next.length
 												&&
@@ -546,106 +564,153 @@ jQuery(document).ready(function($){
 													nextWidth == placeholderParentWidth
 												)
 											)
-										) {
-											placeholderCss.height = 0;
-											placeholderCss.width = '100%';
-											placeholderCss.display = 'block';
-										} else {
-											placeholderCss.height = Math.min(
-												$prev.length ? $prev.outerHeight() - placeholderThickness : 9999,
-												$next.length ? $next.outerHeight() - placeholderThickness : 9999
-											);
+											) {
+												placeholderCss.height = 0;
+												placeholderCss.width = '100%';
+												placeholderCss.display = 'block';
+											} else {
+												placeholderCss.height = Math.min(
+													$prev.length ? $prev.outerHeight() - placeholderThickness : 9999,
+													$next.length ? $next.outerHeight() - placeholderThickness : 9999
+												);
 
-											if (placeholderCss.height === 9999) {
-												placeholderCss.height = ui.helper.height();
+												if (placeholderCss.height === 9999) {
+													placeholderCss.height = ui.helper.height();
+												}
 											}
-										}
 
-										ui.placeholder.css(placeholderCss);
+											ui.placeholder.css(placeholderCss);
 
-										/**
-										 * Align the placeholder in the middle between the items
-										 */
-										{
-											var placeholderInnerCss = {
+											/**
+											 * Align the placeholder in the middle between the items
+											 */
+											{
+												var placeholderInnerCss = {
 													top: '',
 													right: '',
 													bottom: '',
 													left: ''
 												};
 
-											if (placeholderCss.height == 0) {
-												var topSpace = 0, bottomSpace = 0;
+												if (placeholderCss.height == 0) {
+													var topSpace = 0, bottomSpace = 0;
 
-												if ($prev.length) {
-													topSpace = parseInt($prev.css('padding-bottom'));
+													if ($prev.length) {
+														topSpace = parseInt($prev.css('padding-bottom'));
+													} else {
+														topSpace = parseInt(ui.placeholder.parent().css('padding-top'));
+													}
+
+													if ($next.length) {
+														bottomSpace = parseInt($next.css('padding-top'));
+													} else {
+														bottomSpace = parseInt(ui.placeholder.parent().css('padding-bottom'));
+													}
+
+													placeholderInnerCss.left = placeholderInnerCss.right = 10;
+													placeholderInnerCss.bottom = 'auto';
+													placeholderInnerCss.top =
+														bottomSpace -
+														Math.floor((topSpace + bottomSpace) / 2) -
+														Math.floor(placeholderThickness / 2);
 												} else {
-													topSpace = parseInt(ui.placeholder.parent().css('padding-top'));
+													var leftSpace = 0, rightSpace = 0;
+
+													if ($prev.length) {
+														leftSpace = parseInt($prev.css('padding-right'));
+													} else {
+														leftSpace = parseInt(ui.placeholder.parent().css('padding-left'));
+													}
+
+													if ($next.length) {
+														rightSpace = parseInt($next.css('padding-left'));
+													} else {
+														rightSpace = parseInt(ui.placeholder.parent().css('padding-right'));
+													}
+
+													placeholderInnerCss.right = 'auto';
+													placeholderInnerCss.left =
+														rightSpace -
+														Math.floor((leftSpace + rightSpace) / 2) -
+														Math.floor(placeholderThickness / 2);
 												}
 
-												if ($next.length) {
-													bottomSpace = parseInt($next.css('padding-top'));
-												} else {
-													bottomSpace = parseInt(ui.placeholder.parent().css('padding-bottom'));
-												}
+												ui.placeholder.find('> .fw-builder-placeholder-inner').css(placeholderInnerCss);
+											}
+										}
+									},
+									stop: function (event, ui) {
+										itemsRemoveAllowedDeniedClasses();
+									},
+									receive: function (event, ui) {
+										// sometimes the "stop" event is not triggered and classes remains
+										itemsRemoveAllowedDeniedClasses();
 
-												placeholderInnerCss.left = placeholderInnerCss.right = 10;
-												placeholderInnerCss.bottom = 'auto';
-												placeholderInnerCss.top =
-													bottomSpace -
-													Math.floor((topSpace + bottomSpace) / 2) -
-													Math.floor(placeholderThickness / 2);
+										{
+											var currentItemType = null; // will remain null if it is root collection
+											var currentItem;
+
+											if (this.collection._item) {
+												currentItemType = this.collection._item.get('type');
+												currentItem = this.collection._item;
+											}
+										}
+
+										var incomingItemType = ui.item.attr('data-builder-item-type');
+
+										if (incomingItemType) {
+											// received item type from draggable
+
+											var IncomingItemClass = builder.getRegisteredItemClassByType(incomingItemType);
+
+											if (IncomingItemClass) {
+												if (
+													IncomingItemClass.prototype.allowDestinationType(currentItemType)
+													&&
+													(
+														!currentItemType
+														||
+														currentItem.allowIncomingType(incomingItemType)
+													)
+												) {
+													this.collection.add(
+														new IncomingItemClass({}, {
+															$thumb: ui.item
+														}),
+														{
+															at: this.$el.find('> .builder-item-type').index()
+														}
+													);
+												} else {
+													// replace all html, so dragged element will be removed
+													this.render();
+												}
 											} else {
-												var leftSpace = 0, rightSpace = 0;
+												console.error('Unregistered item type: ' + incomingItemType);
 
-												if ($prev.length) {
-													leftSpace = parseInt($prev.css('padding-right'));
-												} else {
-													leftSpace = parseInt(ui.placeholder.parent().css('padding-left'));
-												}
+												this.render();
+											}
+										} else {
+											// received existing item from another sortable
 
-												if ($next.length) {
-													rightSpace = parseInt($next.css('padding-left'));
-												} else {
-													rightSpace = parseInt(ui.placeholder.parent().css('padding-right'));
-												}
-
-												placeholderInnerCss.right = 'auto';
-												placeholderInnerCss.left =
-													rightSpace -
-													Math.floor((leftSpace + rightSpace) / 2) -
-													Math.floor(placeholderThickness / 2);
+											if (!ui.item.attr('id')) {
+												console.warn('Invalid view id', ui.item);
+												return;
 											}
 
-											ui.placeholder.find('> .fw-builder-placeholder-inner').css(placeholderInnerCss);
-										}
-									}
-								},
-								stop: function(event, ui) {
-									itemsRemoveAllowedDeniedClasses();
-								},
-								receive: function(event, ui) {
-									// sometimes the "stop" event is not triggered and classes remains
-									itemsRemoveAllowedDeniedClasses();
+											// extract cid from view id
+											var incomingItemCid = ui.item.attr('id').split('-').pop();
 
-									{
-										var currentItemType = null; // will remain null if it is root collection
-										var currentItem;
+											var incomingItem = builder.findItemRecursive({cid: incomingItemCid});
 
-										if (this.collection._item) {
-											currentItemType = this.collection._item.get('type');
-											currentItem     = this.collection._item;
-										}
-									}
+											if (!incomingItem) {
+												console.warn('Item not found (cid: "' + incomingItemCid + '")');
+												return;
+											}
 
-									var incomingItemType = ui.item.attr('data-builder-item-type');
+											var incomingItemType = incomingItem.get('type');
+											var IncomingItemClass = builder.getRegisteredItemClassByType(incomingItemType);
 
-									if (incomingItemType) {
-										// received item type from draggable
-
-										var IncomingItemClass = builder.getRegisteredItemClassByType(incomingItemType);
-
-										if (IncomingItemClass) {
 											if (
 												IncomingItemClass.prototype.allowDestinationType(currentItemType)
 												&&
@@ -655,128 +720,82 @@ jQuery(document).ready(function($){
 													currentItem.allowIncomingType(incomingItemType)
 												)
 											) {
-												this.collection.add(
-													new IncomingItemClass({}, {
-														$thumb: ui.item
-													}),
-													{
-														at: this.$el.find('> .builder-item-type').index()
-													}
-												);
-											} else {
-												// replace all html, so dragged element will be removed
-												this.render();
-											}
-										} else {
-											console.error('Unregistered item type: '+ incomingItemType);
+												// move item from one collection to another
+												{
+													var at = ui.item.index();
 
-											this.render();
+													// prevent 'remove', that will remove all events from the element
+													incomingItem.view.$el.detach();
+
+													incomingItem.collection.remove(incomingItem);
+
+													this.collection.add(incomingItem, {
+														at: at
+													});
+												}
+											} else {
+												console.warn('[Builder] Item move denied');
+												//ui.sender.fwBuilderSortable('cancel'); // fixme
+											}
 										}
-									} else {
-										// received existing item from another sortable
+									}.bind(this),
+									update: function (event, ui) {
+										if (ui.item.attr('data-ignore-update-once')) {
+											ui.item.removeAttr('data-ignore-update-once');
+											return;
+										}
+
+										if (ui.item.attr('data-builder-item-type')) {
+											// element just received from draggable, it is not builder item yet, do nothing
+											return;
+										}
 
 										if (!ui.item.attr('id')) {
-											console.warn('Invalid view id', ui.item);
+											console.warn('Invalid item, no id');
+											return;
+										}
+
+										if (!$(this).find('> #' + ui.item.attr('id') + ':first').length) {
+											// Item not in sortable, probably moved to another sortable, do nothing
+
+											/**
+											 * Right after this event, is expected to be next 'update' for on same item.
+											 * But between this two 'update' is a 'receive' that takes care about item move from
+											 * one collection to another and place ar right index position in destination model,
+											 * so it is better to ignore next coming 'update'.
+											 * Set a special attribute to ignore 'update' once
+											 */
+											ui.item.attr('data-ignore-update-once', 'true');
+
 											return;
 										}
 
 										// extract cid from view id
-										var incomingItemCid = ui.item.attr('id').split('-').pop();
+										var itemCid = ui.item.attr('id').split('-').pop();
 
-										var incomingItem = builder.findItemRecursive({cid: incomingItemCid});
+										var item = builder.findItemRecursive({cid: itemCid});
 
-										if (!incomingItem) {
-											console.warn('Item not found (cid: "'+ incomingItemCid +'")');
+										if (!item) {
+											console.warn('Item not found (cid: "' + itemCid + '")');
 											return;
 										}
 
-										var incomingItemType = incomingItem.get('type');
-										var IncomingItemClass = builder.getRegisteredItemClassByType(incomingItemType);
+										var index = ui.item.index();
 
-										if (
-											IncomingItemClass.prototype.allowDestinationType(currentItemType)
-											&&
-											(
-												!currentItemType
-												||
-												currentItem.allowIncomingType(incomingItemType)
-											)
-										) {
-											// move item from one collection to another
-											{
-												var at = ui.item.index();
+										// change item position in collection
+										{
+											var collection = item.collection;
 
-												// prevent 'remove', that will remove all events from the element
-												incomingItem.view.$el.detach();
+											// prevent 'remove', that will remove all events from the element
+											item.view.$el.detach();
 
-												incomingItem.collection.remove(incomingItem);
+											collection.remove(item);
 
-												this.collection.add(incomingItem, {
-													at: at
-												});
-											}
-										} else {
-											console.warn('[Builder] Item move denied');
-											ui.sender.sortable('cancel');
+											collection.add(item, {at: index});
 										}
 									}
-								}.bind(this),
-								update: function (event, ui) {
-									if (ui.item.attr('data-ignore-update-once')) {
-										ui.item.removeAttr('data-ignore-update-once');
-										return;
-									}
-
-									if (ui.item.attr('data-builder-item-type')) {
-										// element just received from draggable, it is not builder item yet, do nothing
-										return;
-									}
-
-									if (!ui.item.attr('id')) {
-										console.warn('Invalid item, no id');
-										return;
-									}
-
-									if (!$(this).find('> #'+ ui.item.attr('id') +':first').length) {
-										// Item not in sortable, probably moved to another sortable, do nothing
-
-										/**
-										 * Right after this event, is expected to be next 'update' for on same item.
-										 * But between this two 'update' is a 'receive' that takes care about item move from
-										 * one collection to another and place ar right index position in destination model,
-										 * so it is better to ignore next coming 'update'.
-										 * Set a special attribute to ignore 'update' once
-										 */
-										ui.item.attr('data-ignore-update-once', 'true');
-
-										return;
-									}
-
-									// extract cid from view id
-									var itemCid = ui.item.attr('id').split('-').pop();
-
-									var item = builder.findItemRecursive({cid: itemCid});
-
-									if (!item) {
-										console.warn('Item not found (cid: "'+ itemCid +'")');
-										return;
-									}
-
-									var index = ui.item.index();
-
-									// change item position in collection
-									{
-										var collection = item.collection;
-
-										// prevent 'remove', that will remove all events from the element
-										item.view.$el.detach();
-
-										collection.remove(item);
-
-										collection.add(item, {at: index});
-									}
-								}
-							});
+								});
+							}
 
 							return true;
 						}

@@ -198,6 +198,16 @@ abstract class FW_Option_Type_Builder extends FW_Option_Type
 		$option = $this->fix_base_defaults($option);
 		$version = fw_ext('builder')->manifest->get_version();
 
+		wp_enqueue_script(
+			'fw-option-builder-sortable',
+			$this->get_static_uri('/js/sortable.js'),
+			array(
+				'jquery',
+			),
+			$version,
+			true
+		);
+
 		{
 			wp_enqueue_style(
 				'fw-option-builder',
@@ -213,7 +223,7 @@ abstract class FW_Option_Type_Builder extends FW_Option_Type
 				$this->get_static_uri('/js/builder.js'),
 				array(
 					'jquery-ui-draggable',
-					'jquery-ui-sortable',
+					'fw-option-builder-sortable',
 					'fw',
 					'fw-events',
 					'backbone',
