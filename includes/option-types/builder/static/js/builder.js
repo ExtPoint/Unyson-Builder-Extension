@@ -484,7 +484,7 @@ jQuery(document).ready(function($){
 										// this happens when the item is not allowed to be dragged in another
 										ui.placeholder.removeAttr('style');
 									} else {
-										var placeholderThickness = 8, // this is affected by css
+										var placeholderThickness = 2, // this is affected by css
 											$prev = ui.placeholder.prev(),
 											$next = ui.placeholder.next(),
 											placeholderCss = {
