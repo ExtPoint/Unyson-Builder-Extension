@@ -379,7 +379,8 @@ jQuery(document).ready(function($){
 							this.$el.sortable({
 								helper: 'clone',
 								items: '> .builder-item',
-								connectWith: '#'+ builder.$input.closest('.fw-option-type-builder').attr('id') +' .builder-root-items .builder-items',
+								connectWith: '#'+ builder.$input.closest('.fw-option-type-builder').attr('id') +
+									' .builder-root-items .builder-items',
 								distance: 10,
 								opacity: 0.6,
 								scrollSpeed: 10,
@@ -558,6 +559,8 @@ jQuery(document).ready(function($){
 
 											if (placeholderCss.height === 9999) {
 												placeholderCss.height = ui.helper.height();
+											} else {
+												placeholderCss.height -= 4;
 											}
 										}
 
