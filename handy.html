@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unyson Builder</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <style type="text/css">
+        .app .app-debug .app-editor {
+            min-height: 256px;
+            font-size: 14px;
+        }
+
+        .app-builder,
+        .app-builder .app-builder-section,
+        .app-builder .app-builder-column,
+        .app-builder .app-builder-shortcode {
+            border-radius: 5px;
+            background-color: #fff;
+            padding-bottom: 20px;
+        }
+        .app-builder .app-builder-section:before,
+        .app-builder .app-builder-column:before,
+        .app-builder .app-builder-shortcode:before {
+            padding: 10px 0;
+        }
+        .app-builder {
+            margin-bottom: 15px;
+            padding: 15px 30px;
+            box-shadow: inset 0 0 10px #ccc;
+        }
+        .app-builder .app-builder-section {
+            border: 1px solid #4b956d;
+            background-color: #d5ffd5;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        .app-builder .app-builder-section:before {
+            content: 'Section';
+            display: block;
+            padding-bottom: 10px;
+        }
+        .app-builder .app-builder-column {
+            border: 1px solid #4c6595;
+            background-color: #ccdeff;
+        }
+        .app-builder .app-builder-column:before {
+            content: 'Column';
+            display: block;
+            padding-bottom: 10px;
+        }
+        .app-builder .app-builder-column.col-sm-12:before {
+            content: 'Column 1/1';
+        }
+        .app-builder .app-builder-column.col-sm-6:before {
+            content: 'Column 1/2';
+        }
+        .app-builder .app-builder-column.col-sm-4:before {
+            content: 'Column 1/3';
+        }
+        .app-builder .app-builder-column.col-sm-3:before {
+            content: 'Column 1/4';
+        }
+        .app-builder .app-builder-shortcode {
+            border: 1px solid #956771;
+            background-color: #ffd2dc;
+            padding-bottom: 0;
+        }
+        .app-builder .app-builder-shortcode:before {
+            content: 'Shortcode';
+            display: block;
+            padding-left: 10px;
+        }
+        .app-builder .app-sortable {
+            box-sizing: border-box;
+            padding: 10px 0;
+            background: #fff;
+            border-radius: 5px;
+        }
+    </style>
+
+    <script type="text/template" id="app-builder-template">
+        <div class="app-builder-section row">
+            <div class="app-sortable clearfix">
+                <div class="app-builder-column col-sm-12">
+                    <div class="app-sortable clearfix">
+                        <div class="app-builder-shortcode"></div>
+                    </div>
+                </div>
+                <div class="app-builder-column col-sm-6">
+                    <div class="app-sortable clearfix">
+                        <div class="app-builder-shortcode"></div>
+                    </div>
+                </div>
+                <div class="app-builder-column col-sm-6">
+                    <div class="app-sortable clearfix">
+                        <div class="app-builder-shortcode"></div>
+                    </div>
+                </div>
+                <div class="app-builder-column col-sm-4">
+                    <div class="app-sortable clearfix">
+                        <div class="app-builder-shortcode"></div>
+                    </div>
+                </div>
+                <div class="app-builder-column col-sm-4">
+                    <div class="app-sortable clearfix">
+                        <div class="app-builder-shortcode"></div>
+                    </div>
+                </div>
+                <div class="app-builder-column col-sm-4">
+                    <div class="app-sortable clearfix">
+                        <div class="app-builder-shortcode"></div>
+                    </div>
+                </div>
+                <div class="app-builder-column col-sm-3">
+                    <div class="app-sortable clearfix">
+                        <div class="app-builder-shortcode"></div>
+                    </div>
+                </div>
+                <div class="app-builder-column col-sm-3">
+                    <div class="app-sortable clearfix">
+                        <div class="app-builder-shortcode"></div>
+                    </div>
+                </div>
+                <div class="app-builder-column col-sm-3">
+                    <div class="app-sortable clearfix">
+                        <div class="app-builder-shortcode"></div>
+                    </div>
+                </div>
+                <div class="app-builder-column col-sm-3">
+                    <div class="app-sortable clearfix">
+                        <div class="app-builder-shortcode"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="app-builder-section row">
+            <div class="app-sortable clearfix">
+                <div class="app-builder-column col-sm-6">
+                    <div class="app-sortable clearfix">
+                        <div class="app-builder-shortcode"></div>
+                    </div>
+                </div>
+                <div class="app-builder-column col-sm-6">
+                    <div class="app-sortable clearfix"></div>
+                </div>
+            </div>
+        </div>
+        <div class="app-builder-section row">
+            <div class="app-sortable clearfix"></div>
+        </div>
+    </script>
+</head>
+<body>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="app" id="jquery/sortable">
+                <h2>
+                    <a href="https://github.com/jquery/jquery-ui/blob/1.11.4/ui/sortable.js" target="_blank">jquery/sortable</a>
+                    <small><a href="#bevacqua/dragula">&para;</a></small>
+                </h2>
+                <div class="app-builder container-fluid"></div>
+                <div class="app-debug">
+                    <div class="app-editor form-control" rows="10"></div>
+                    <br/>
+                    <button type="button" class="btn btn-default app-execute">ReInit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="app" id="bevacqua/dragula">
+                <h2>
+                    <a href="https://github.com/bevacqua/dragula" target="_blank">bevacqua/dragula</a>
+                    <small><a href="#bevacqua/dragula">&para;</a></small>
+                </h2>
+                <div class="app-builder"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="app" id="rubaxa/sortable">
+                <h2>
+                    <a href="https://github.com/rubaxa/sortable" target="_blank">rubaxa/sortable</a>
+                    <small><a href="#rubaxa/sortable">&para;</a></small>
+                </h2>
+                <div class="app-builder"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://ace.c9.io/build/src-noconflict/ace.js"></script>
+
+<script>
+    jQuery(function($){
+        $('.app').each(function(){
+            var $wrapper = $(this);
+
+            // init code editor
+            {
+                var editor = ace.edit($wrapper.find('.app-debug .app-editor').get(0));
+
+                editor.getSession().setMode('ace/mode/javascript');
+            }
+
+            $wrapper.find('.app-debug .app-execute').on('click app-execute', function(){
+                var $oldBuilder = $wrapper.find('.app-builder'),
+                    $builder = $('<div class="app-builder container-fluid"></div>');
+
+                /**
+                 * Replace the builder entirely
+                 * to make sure there are no event listeners or other plugin instances attached on it
+                 */
+                {
+                    $builder.insertAfter($oldBuilder);
+
+                    $oldBuilder.remove();
+                    $oldBuilder = undefined;
+                }
+
+                $builder.html($('#app-builder-template').html());
+
+                window.eval.call(window,'(function ($, $builder) {'+ editor.getValue() +'})')(
+                    jQuery, $builder
+                );
+            });
+        });
+
+        $('.app .app-debug .app-execute').trigger('app-execute');
+    });
+</script>
+
+</body>
+</html>
