@@ -102,6 +102,8 @@
         }
     </style>
 
+    <link rel="stylesheet" href="http://bevacqua.github.io/dragula/dist/dragula.css" />
+
     <script type="text/template" id="app-builder-template">
         <div class="app-builder-section row">
             <div class="app-sortable clearfix">
@@ -215,7 +217,19 @@ $builder.find('.app-sortable').sortable(o);</div>
                     <a href="https://github.com/bevacqua/dragula" target="_blank">bevacqua/dragula</a>
                     <small><a href="#plugin-bevacqua-dragula">&para;</a></small>
                 </h2>
-                <div class="app-builder"></div>
+                <div class="app-builder app-sortable container-fluid"></div>
+                <div class="app-debug">
+                    <div class="app-editor"
+                        >var o = {};
+
+var drake = dragula([$builder.get(0)], o);
+
+$builder.find('.app-sortable').each(function(){
+    drake.containers.push($(this).get(0));
+});</div>
+                    <br/>
+                    <button type="button" class="btn btn-default app-execute">ReInit</button>
+                </div>
             </div>
         </div>
     </div>
@@ -241,6 +255,8 @@ $builder.find('.app-sortable').sortable(o);</div>
 <script src="https://rawgit.com/WordPress/WordPress/master/wp-includes/js/jquery/ui/widget.min.js"></script>
 <script src="https://rawgit.com/WordPress/WordPress/master/wp-includes/js/jquery/ui/mouse.min.js"></script>
 <script src="https://rawgit.com/WordPress/WordPress/master/wp-includes/js/jquery/ui/sortable.min.js"></script>
+
+<script src="http://bevacqua.github.io/dragula/dist/dragula.js"></script>
 
 <script>
     jQuery(function($){
