@@ -241,7 +241,21 @@ $builder.find('.app-sortable').each(function(){
                     <a href="https://github.com/rubaxa/sortable" target="_blank">rubaxa/sortable</a>
                     <small><a href="#plugin-rubaxa-sortable">&para;</a></small>
                 </h2>
-                <div class="app-builder"></div>
+                <div class="app-builder app-sortable container-fluid"></div>
+                <div class="app-debug">
+                    <div class="app-editor"
+                        >var o = {
+    group: 'main'
+};
+
+new Sortable($builder.get(0), o);
+
+$builder.find('.app-sortable').each(function(){
+    new Sortable($(this).get(0), o);
+});</div>
+                    <br/>
+                    <button type="button" class="btn btn-default app-execute">ReInit</button>
+                </div>
             </div>
         </div>
     </div>
@@ -257,6 +271,8 @@ $builder.find('.app-sortable').each(function(){
 <script src="https://rawgit.com/WordPress/WordPress/master/wp-includes/js/jquery/ui/sortable.min.js"></script>
 
 <script src="http://bevacqua.github.io/dragula/dist/dragula.js"></script>
+
+<script src="http://rubaxa.github.io/Sortable/Sortable.js"></script>
 
 <script>
     jQuery(function($){
