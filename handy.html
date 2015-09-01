@@ -107,52 +107,52 @@
     <script type="text/template" id="app-builder-template">
         <div class="app-builder-section row">
             <div class="app-sortable clearfix">
-                <div class="app-builder-column col-sm-12">
+                <div class="app-builder-column col-xs-12 col-sm-12">
                     <div class="app-sortable clearfix">
                         <div class="app-builder-shortcode"></div>
                     </div>
                 </div>
-                <div class="app-builder-column col-sm-6">
+                <div class="app-builder-column col-xs-12 col-sm-6">
                     <div class="app-sortable clearfix">
                         <div class="app-builder-shortcode"></div>
                     </div>
                 </div>
-                <div class="app-builder-column col-sm-6">
+                <div class="app-builder-column col-xs-12 col-sm-6">
                     <div class="app-sortable clearfix">
                         <div class="app-builder-shortcode"></div>
                     </div>
                 </div>
-                <div class="app-builder-column col-sm-4">
+                <div class="app-builder-column col-xs-12 col-sm-4">
                     <div class="app-sortable clearfix">
                         <div class="app-builder-shortcode"></div>
                     </div>
                 </div>
-                <div class="app-builder-column col-sm-4">
+                <div class="app-builder-column col-xs-12 col-sm-4">
                     <div class="app-sortable clearfix">
                         <div class="app-builder-shortcode"></div>
                     </div>
                 </div>
-                <div class="app-builder-column col-sm-4">
+                <div class="app-builder-column col-xs-12 col-sm-4">
                     <div class="app-sortable clearfix">
                         <div class="app-builder-shortcode"></div>
                     </div>
                 </div>
-                <div class="app-builder-column col-sm-3">
+                <div class="app-builder-column col-xs-12 col-sm-3">
                     <div class="app-sortable clearfix">
                         <div class="app-builder-shortcode"></div>
                     </div>
                 </div>
-                <div class="app-builder-column col-sm-3">
+                <div class="app-builder-column col-xs-12 col-sm-3">
                     <div class="app-sortable clearfix">
                         <div class="app-builder-shortcode"></div>
                     </div>
                 </div>
-                <div class="app-builder-column col-sm-3">
+                <div class="app-builder-column col-xs-12 col-sm-3">
                     <div class="app-sortable clearfix">
                         <div class="app-builder-shortcode"></div>
                     </div>
                 </div>
-                <div class="app-builder-column col-sm-3">
+                <div class="app-builder-column col-xs-12 col-sm-3">
                     <div class="app-sortable clearfix">
                         <div class="app-builder-shortcode"></div>
                     </div>
@@ -161,12 +161,12 @@
         </div>
         <div class="app-builder-section row">
             <div class="app-sortable clearfix">
-                <div class="app-builder-column col-sm-6">
+                <div class="app-builder-column col-xs-12 col-sm-6">
                     <div class="app-sortable clearfix">
                         <div class="app-builder-shortcode"></div>
                     </div>
                 </div>
-                <div class="app-builder-column col-sm-6">
+                <div class="app-builder-column col-xs-12 col-sm-6">
                     <div class="app-sortable clearfix"></div>
                 </div>
             </div>
@@ -179,6 +179,33 @@
 <body>
 
 <div class="container-fluid">
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="app" id="plugin-bevacqua-dragula">
+                <h2>
+                    <a href="https://github.com/bevacqua/dragula" target="_blank">bevacqua/dragula</a>
+                    <small><a href="#plugin-bevacqua-dragula">&para;</a></small>
+                    <small class="text-warning">
+                        Problem <a href="https://static.md/112f4010962bde64851dbb66a22fbc89.gif" target="_blank">#1</a>
+                    </small>
+                </h2>
+                <div class="app-builder app-sortable container-fluid"></div>
+                <div class="app-debug">
+                    <div class="app-editor"
+                        >var o = {};
+
+var drake = dragula([$builder.get(0)], o);
+
+$builder.find('.app-sortable').each(function(){
+    drake.containers.push($(this).get(0));
+});</div>
+                    <br/>
+                    <button type="button" class="btn btn-default app-execute">ReInit</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col-xs-12">
@@ -203,30 +230,6 @@
 
 $builder.sortable(o);
 $builder.find('.app-sortable').sortable(o);</div>
-                    <br/>
-                    <button type="button" class="btn btn-default app-execute">ReInit</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="app" id="plugin-bevacqua-dragula">
-                <h2>
-                    <a href="https://github.com/bevacqua/dragula" target="_blank">bevacqua/dragula</a>
-                    <small><a href="#plugin-bevacqua-dragula">&para;</a></small>
-                </h2>
-                <div class="app-builder app-sortable container-fluid"></div>
-                <div class="app-debug">
-                    <div class="app-editor"
-                        >var o = {};
-
-var drake = dragula([$builder.get(0)], o);
-
-$builder.find('.app-sortable').each(function(){
-    drake.containers.push($(this).get(0));
-});</div>
                     <br/>
                     <button type="button" class="btn btn-default app-execute">ReInit</button>
                 </div>
